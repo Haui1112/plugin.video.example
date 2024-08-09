@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.example"
+<addon id="plugin.video.pt"
 version="3.0.1"
-name="Example Kodi Video Plugin"
-provider-name="Roman_V_M">
+name="Next Gen Peertube Addon"
+provider-name="Haui111">
 <requires>
   <import addon="xbmc.python" version="3.0.1"/>
 </requires>
@@ -10,12 +10,12 @@ provider-name="Roman_V_M">
   <provides>video</provides>
 </extension>
 <extension point="xbmc.addon.metadata">
-  <summary lang="en_GB">Example Kodi Video Plugin</summary>
-  <description lang="en_GB">An example video plugin for Kodi mediacenter.</description>
-  <disclaimer lang="en_GB">Public domain movies are provided by publicdomainmovie.net.</disclaimer>
+  <summary lang="en_GB">Next Gen Peertube Addon</summary>
+  <description lang="en_GB">In lieu of a working peertube addon, I've decided to make a new one.</description>
+  <disclaimer lang="en_GB">Feel free to build and improve on this addon.</disclaimer>
   <license>GPL-3.0-only	</license>
   <assets>
-    <icon>resources/images/icon.png</icon>
+    <icon>resources/images/icon.png></icon>
     <fanart>resources/images/fanart.jpg</fanart>
     <screenshot>resources/images/screenshot-1.jpg</screenshot>
     <screenshot>resources/images/screenshot-2.jpg</screenshot>

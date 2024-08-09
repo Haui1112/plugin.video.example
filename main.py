@@ -44,19 +44,15 @@ VIDEOS = [
         'fanart': os.path.join(FANART_DIR, 'Drama.jpg'),
         'movies': [
             {
-                'title': 'The Stranger',
-                'url': 'https://ia800908.us.archive.org/30/items/TheStranger_0/The_Stranger_512kb.mp4',
+                'title': 'Diamond Tutorial',
+                'url': 'https://peertube.giftedmc.com/download/streaming-playlists/hls/videos/367382ff-281d-4c6a-a699-1bd246a433ce-1440-fragmented.mp4',
                 'poster': 'https://publicdomainmovie.net/wikimedia.php?id=Movie-Mystery-Magazine-July-1946.jpg',
-                'plot': 'In 1946, Mr. Wilson (Edward G. Robinson) of the United Nations War Crimes Commission is hunting for '
-                        'a Nazism fugitive Franz Kindler (Orson Welles), a war criminal who has erased all evidence which '
-                        'might identify him. Kindler has assumed a new identity, Charles Rankin, '
-                        'and has become a University-preparatory school#United States and Canada teacher '
-                        'in a small town in the United States. ',
-                'year': 1946,
+                'plot': 'In this video, I show you how to get diamonds on giftedmc. ',
+                'year': 2023,
             },
             {
-                'title': 'The Iron Mask',
-                'url': 'https://ia600702.us.archive.org/3/items/iron_mask/iron_mask_512kb.mp4',
+                'title': 'Diamond Tutorial 2',
+                'url': 'https://peertube.giftedmc.com/static/streaming-playlists/hls/367382ff-281d-4c6a-a699-1bd246a433ce/6c0afbe8-2603-4968-91a9-10fe351571fe-master.m3u8',
                 'poster': 'https://publicdomainmovie.net/wikimedia.php?id=Ironmaskposter.jpg',
                 'plot': 'The Iron Mask is a 1929 American part-talkie adventure film directed by Allan Dwan. '
                           'It is an adaptation of the last section of the novel The Vicomte de Bragelonne by '

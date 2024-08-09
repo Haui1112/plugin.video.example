@@ -63,3 +63,7 @@ target/
 .idea/
 
 *.zip
+
+RELEASE/
+resources/images/icon.png.old
+resources/images/logo.svg
