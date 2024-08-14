@@ -17,12 +17,17 @@ Example video plugin that is compatible with Kodi 20.x "Nexus" and above
 """
 import os
 import sys
+import requests
+import json
 from urllib.parse import urlencode, parse_qsl
 
 import xbmcgui
 import xbmcplugin
 from xbmcaddon import Addon
 from xbmcvfs import translatePath
+# from resources.lib.kodi_utils import kodi
+# from resources.lib.peertube import PeerTube, list_instances
+# from resources.lib.addon import PeerTubeAddon
 
 # Get the plugin url in plugin:// notation.
 URL = sys.argv[0]
@@ -166,8 +171,89 @@ def get_genres():
     """
     return VIDEOS
 
+def get_instances():
+    filename = "instances.json"
+    #if file doesnt exist, create one
+    if not os.path.isfile(filename):
+        print("No file, requesting new data!")
+        request = requests.get('https://instances.joinpeertube.org/api/v1/instances/hosts?count=1000&start=0&sort=createdAt')
+        r = request.json()
+        # print(r["data"])
+        # print(r)
+        with open(filename, 'w', encoding='utf-8') as instances_file:
+            json.dump(r, instances_file, ensure_ascii=False, indent=4)
+        # instances_file = open(filename, "w")
+        # instances_file.write(json.dump(r))
+        # instances_file.close
+    else:
+        r = json.load(open(filename))
+        # print("File found! Printing")
+        # print(r)
+    #read from file
+    # for i in r['data']:
+    #     print(i['host'])
+    # print(r['data'])
+    return r["data"]
 
-def get_videos(genre_index):
+def list_instances():
+    """
+    Create the list of movie genres in the Kodi interface.
+    """
+
+    # Set plugin category. It is displayed in some skins as the name
+    # of the current section.
+    xbmcplugin.setPluginCategory(HANDLE, 'Peertube Servers')
+
+    # Set plugin content. It allows Kodi to select appropriate views
+    # for this type of content.
+    xbmcplugin.setContent(HANDLE, 'movies')
+
+    # Get movie genres
+    # genres = get_genres()
+    instances = get_instances()
+
+    # Iterate through genres
+    for index, genre_info in enumerate(instances):
+
+        # Create a list item with a text label.
+        list_item = xbmcgui.ListItem(label=genre_info['host'])
+
+        # Set images for the list item.
+        #list_item.setArt({'icon': genre_info['icon'], 'fanart': genre_info['fanart']})
+
+        # Set additional info for the list item using its InfoTag.
+        # InfoTag allows to set various information for an item.
+        # For available properties and methods see the following link:
+        # https://codedocs.xyz/xbmc/xbmc/classXBMCAddon_1_1xbmc_1_1InfoTagVideo.html
+        # 'mediatype' is needed for a skin to display info for this ListItem correctly.
+
+        info_tag = list_item.getVideoInfoTag()
+
+        info_tag.setMediaType('video')
+
+        info_tag.setTitle(genre_info['host'])
+
+        info_tag.setGenres([genre_info['host']])
+
+        # Create a URL for a plugin recursive call.
+        # Example: plugin://plugin.video.example/?action=listing&genre_index=0
+        # url = get_url(action='listing', genre_index=index)
+        url = get_url(action='listing', host=genre_info['host'])
+
+        # is_folder = True means that this item opens a sub-list of lower level items.
+        is_folder = True
+        # host = genre_info['host']
+        # Add our item to the Kodi virtual folder listing.
+        xbmcplugin.addDirectoryItem(HANDLE, url, list_item, is_folder)
+
+    # Add sort methods for the virtual folder items
+    xbmcplugin.addSortMethod(HANDLE, xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
+
+    # Finish creating a virtual folder.
+    xbmcplugin.endOfDirectory(HANDLE)
+    # return host
+
+def get_videos_old(genre_index):
     """
     Get the list of videofiles/streams.
 
@@ -181,6 +267,44 @@ def get_videos(genre_index):
     """
     return VIDEOS[genre_index]
 
+def get_videos(host):
+    """
+    Get the list of videofiles/streams.
+
+    Here you can insert some code that retrieves
+    the list of video streams in the given section from some site or API.
+
+    :param genre_index: genre index
+    :type genre_index: int
+    :return: the list of videos in the category
+    :rtype: list
+    """
+    # filename = "videos.json"
+    #if file doesnt exist, create one
+    # if not os.path.isfile(filename):
+        # print("No file, requesting new data!")
+        # request = requests.get('https://peertube.giftedmc.com/api/v1/videos?isLocal=true')
+    request = requests.get('https://%s/api/v1/videos?isLocal=true' % (host))
+    r = request.json()
+        # print(r["data"])
+        # print(r)
+        # with open(filename, 'w', encoding='utf-8') as instances_file:
+        #     json.dump(r, instances_file, ensure_ascii=False, indent=4)
+        # instances_file = open(filename, "w")
+        # instances_file.write(json.dump(r))
+        # instances_file.close
+    # else:
+        # r = json.load(open(filename))
+        # print("File found! Printing")
+        # print(r)
+    #read from file
+    # for i in r['data']:
+    #     print(i['host'])
+    # print(r['data'])
+    # print(genre_index)
+    return r["data"]
+    # return VIDEOS[genre_index]
+
 
 def list_genres():
     """
@@ -188,12 +312,13 @@ def list_genres():
     """
     # Set plugin category. It is displayed in some skins as the name
     # of the current section.
-    xbmcplugin.setPluginCategory(HANDLE, 'Public Domain Movies')
+    xbmcplugin.setPluginCategory(HANDLE, 'Peertube Servers')
     # Set plugin content. It allows Kodi to select appropriate views
     # for this type of content.
     xbmcplugin.setContent(HANDLE, 'movies')
     # Get movie genres
     genres = get_genres()
+    # genres = get_instances()
     # Iterate through genres
     for index, genre_info in enumerate(genres):
         # Create a list item with a text label.
@@ -221,55 +346,118 @@ def list_genres():
     # Finish creating a virtual folder.
     xbmcplugin.endOfDirectory(HANDLE)
 
+def generate_item_info(self, name, url, is_folder=True, thumbnail="",
+                        aired="", duration=0, plot="",):
+    """Return all the information required to create an item in Kodi UI
 
-def list_videos(genre_index):
+    This function makes the creation of an item easier: it allows to pass
+    to the function only the known information about an item, and it will
+    return a dict with all the keys expected by create_items_in_ui
+    correctly initialized (including the ones that were not passed).
+
+    :param str name: Name of the item
+    :param str url: URL to reach when the item is used
+    :param bool is_folder: Whether the item is a folder or is playable
+    :param <other>: The other parameters are the ones expected by
+    ListItem.setInfo() and ListItem.setArt()
+    :return: Information required to create the item in Kodi UI
+    :rtype: dict
+    """
+    return {
+        "name": name,
+        "url": url,
+        "is_folder": is_folder,
+        "art": {
+            "thumb": thumbnail,
+        },
+        "info": {
+            "aired": aired,
+            "duration": duration,
+            "plot": plot,
+            "title": name
+        }
+    }
+
+
+
+
+# def list_videos(genre_index):
+def list_videos(host):
     """
     Create the list of playable videos in the Kodi interface.
 
     :param genre_index: the index of genre in the list of movie genres
     :type genre_index: int
     """
-    genre_info = get_videos(genre_index)
+    genre_info = get_videos(host)
+
     # Set plugin category. It is displayed in some skins as the name
     # of the current section.
-    xbmcplugin.setPluginCategory(HANDLE, genre_info['genre'])
+    # xbmcplugin.setPluginCategory(HANDLE, genre_info['genre'])
+    # xbmcplugin.setPluginCategory(HANDLE, genre_info['name'])
+    xbmcplugin.setPluginCategory(HANDLE, 'Videos')
+
+
     # Set plugin content. It allows Kodi to select appropriate views
     # for this type of content.
     xbmcplugin.setContent(HANDLE, 'movies')
+
     # Get the list of videos in the category.
-    videos = genre_info['movies']
+    # videos = genre_info['movies']
+    videos = genre_info
+
     # Iterate through videos.
     for video in videos:
         # Create a list item with a text label
-        list_item = xbmcgui.ListItem(label=video['title'])
+        # list_item = xbmcgui.ListItem(label=video['title'])
+        list_item = xbmcgui.ListItem(label=video['name'])
+        # list_item = xbmcgui.ListItem(label=genre_info['host'])
+
         # Set graphics (thumbnail, fanart, banner, poster, landscape etc.) for the list item.
         # Here we use only poster for simplicity's sake.
         # In a real-life plugin you may need to set multiple image types.
-        list_item.setArt({'poster': video['poster']})
+        # list_item.setArt({'poster': video['poster']})
+
         # Set additional info for the list item via InfoTag.
         # 'mediatype' is needed for skin to display info for this ListItem correctly.
         info_tag = list_item.getVideoInfoTag()
         info_tag.setMediaType('movie')
-        info_tag.setTitle(video['title'])
-        info_tag.setGenres([genre_info['genre']])
-        info_tag.setPlot(video['plot'])
-        info_tag.setYear(video['year'])
+        info_tag.setTitle(video['name'])
+        # info_tag.setGenres([genre_info['category']])
+        # info_tag.setPlot(video['plot'])
+        # info_tag.setYear(video['publishedAt'])
+
         # Set 'IsPlayable' property to 'true'.
         # This is mandatory for playable items!
         list_item.setProperty('IsPlayable', 'true')
+
         # Create a URL for a plugin recursive call.
         # Example: plugin://plugin.video.example/?action=play&video=https%3A%2F%2Fia600702.us.archive.org%2F3%2Fitems%2Firon_mask%2Firon_mask_512kb.mp4
-        url = get_url(action='play', video=video['url'])
+        # url = get_url(action='play', video=video['url'])
+        url = get_url(action='play', video=get_video(host, video['id']))
+
         # Add the list item to a virtual Kodi folder.
         # is_folder = False means that this item won't open any sub-list.
         is_folder = False
+
         # Add our item to the Kodi virtual folder listing.
         xbmcplugin.addDirectoryItem(HANDLE, url, list_item, is_folder)
+
     # Add sort methods for the virtual folder items
     xbmcplugin.addSortMethod(HANDLE, xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
     xbmcplugin.addSortMethod(HANDLE, xbmcplugin.SORT_METHOD_VIDEO_YEAR)
+
     # Finish creating a virtual folder.
     xbmcplugin.endOfDirectory(HANDLE)
+
+def get_video(host, id):
+    print(host)
+    print(id)
+    # request = requests.get('https://peertube.giftedmc.com/api/v1/videos/%d' % (id))
+    request = requests.get('https://%s/api/v1/videos/%d' % (host, id))
+    r = request.json()
+    print(r)
+    return r["streamingPlaylists"][0]["playlistUrl"]
 
 
 def play_video(path):
@@ -303,10 +491,15 @@ def router(paramstring):
     if not params:
         # If the plugin is called from Kodi UI without any parameters,
         # display the list of video categories
-        list_genres()
+        # list_genres()
+        list_instances()
+#        browse_instances(int(params['start']))
+
     elif params['action'] == 'listing':
         # Display the list of videos in a provided category.
-        list_videos(int(params['genre_index']))
+#        list_videos(int(params['genre_index']))
+        list_videos(params['host'])
+
     elif params['action'] == 'play':
         # Play a video from a provided URL.
         play_video(params['video'])
