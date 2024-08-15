@@ -2,4 +2,5 @@ RELEASE
 .git
 .gitignore
 build.sh
+build2.sh
 buildignore

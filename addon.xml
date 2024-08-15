@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon id="plugin.video.pt"
-version="3.0.1"
+version="0.1.0"
 name="Next Gen Peertube Addon"
 provider-name="Haui111">
 <requires>
@@ -22,6 +22,6 @@ provider-name="Haui111">
     <screenshot>resources/images/screenshot-1.jpg</screenshot>
     <screenshot>resources/images/screenshot-2.jpg</screenshot>
   </assets>
-  <news>Updated with latest artwork metadata</news>
+  <news>Finally watch peertube on kodi again!</news>
 </extension>
 </addon>
