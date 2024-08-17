@@ -17,10 +17,8 @@ provider-name="Haui111">
   <disclaimer lang="en_GB">Feel free to build and improve on this addon.</disclaimer>
   <license>GPL-3.0-only	</license>
   <assets>
-    <icon>resources/images/icon.png></icon>
+    <icon>resources/images/icon.png</icon>
     <fanart>resources/images/fanart.jpg</fanart>
-    <screenshot>resources/images/screenshot-1.jpg</screenshot>
-    <screenshot>resources/images/screenshot-2.jpg</screenshot>
   </assets>
   <news>Finally watch peertube on kodi again!</news>
 </extension>
