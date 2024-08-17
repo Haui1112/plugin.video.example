@@ -3,6 +3,7 @@
 set -e
 
 RELEASEFOLDER="./RELEASE/plugin.video.pt"
+if [ -d ${RELEASEFOLDER} ]; then rm -r ${RELEASEFOLDER}; fi
 mkdir -p ${RELEASEFOLDER}
 
 for filename in ./*; do
