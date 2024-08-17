@@ -4,3 +4,4 @@ RELEASE
 build.sh
 build2.sh
 buildignore
+.github/
