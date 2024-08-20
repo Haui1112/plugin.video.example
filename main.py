@@ -2,6 +2,7 @@ import os
 import sys
 import requests
 import json
+import xbmcvfs
 from urllib.parse import urlencode, parse_qsl
 
 import xbmcgui
@@ -14,20 +15,26 @@ HANDLE = int(sys.argv[1])
 ADDON_PATH = translatePath(Addon().getAddonInfo('path'))
 ICONS_DIR = os.path.join(ADDON_PATH, 'resources', 'images', 'icons')
 FANART_DIR = os.path.join(ADDON_PATH, 'resources', 'images', 'fanart')
+ADDON_ID = 'plugin.video.pt'
+USERDATA_PATH = f'special://userdata/addon_data/{ADDON_ID}/'
 
 def get_url(**kwargs):
     return '{}?{}'.format(URL, urlencode(kwargs))
 
 def get_instances():
     filename = "instances.json"
-    if not os.path.isfile(filename):
+    if not os.path.exists(USERDATA_PATH):
+        os.makedirs(USERDATA_PATH)        
+    FILE_PATH = os.path.join(USERDATA_PATH, filename)
+    if not xbmcvfs.exists(FILE_PATH):
         print("No file, requesting new data!")
         request = requests.get('https://instances.joinpeertube.org/api/v1/instances/hosts?count=1000&start=0&sort=createdAt')
         r = request.json()
-        with open(filename, 'w', encoding='utf-8') as instances_file:
-            json.dump(r, instances_file, ensure_ascii=False, indent=4)
+        with xbmcvfs.File(FILE_PATH) as instances_file:
+            instances_file.write(json.dumps(r, ensure_ascii=False, indent=4))
     else:
-        r = json.load(open(filename))
+        with xbmcvfs.File(FILE_PATH) as instances_file:
+            r = json.load(instances_file)
     return r["data"]
 
 def list_instances():
