@@ -15,7 +15,7 @@ provider-name="Haui111">
   <summary lang="en_GB">Next Gen Peertube Addon</summary>
   <description lang="en_GB">In lieu of a working peertube addon, I've decided to make a new one.</description>
   <disclaimer lang="en_GB">Feel free to build and improve on this addon.</disclaimer>
-  <license>GPL-3.0-only	</license>
+  <license>GPL-3.0-only</license>
   <source>https://github.com/Haui1112/plugin.video.pt</source>
   <assets>
     <icon>resources/images/icon.png</icon>
